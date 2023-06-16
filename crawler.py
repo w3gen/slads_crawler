@@ -100,7 +100,7 @@ def extract_data(url):
 # Main function to start scanning the website
 def scan_website():
     # Iterate through IDs from 0 to 1000000
-    for ad_id in range(23001, 1000001):
+    for ad_id in range(230001, 1000001):
         page_url = ad_url_template + str(ad_id)
         response = requests.get(page_url)
 
