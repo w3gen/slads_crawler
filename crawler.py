@@ -38,7 +38,7 @@ def extract_data(url):
     ad_title = ad_title_element.text.strip() if ad_title_element else ''
 
     # Find the description with the specified CSS id
-    description_element = soup.find(id='descriptionTxt')
+    description_element = soup.find(id='desctiptionTxt')
     description_text = description_element.text.strip() if description_element else ''
 
     # Find all image tags with the specified CSS classes and extract the source URLs
@@ -80,7 +80,7 @@ def extract_data(url):
         save_image(source_url, image_name)
 
         # Get the path of the saved image
-        image_path = f"images/{image_name}"
+        image_path = f"https://sl-ads.info/wp-content/uploads/slads_crawler/images/{image_name}"
 
         # Find the mobile number element by id and extract the phone number
         mobile_number_element = soup.find('span', {'id': 'sellerPhoneNumberaa'})
