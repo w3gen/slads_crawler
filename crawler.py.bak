@@ -5,7 +5,6 @@ import sqlite3
 from bs4 import BeautifulSoup
 import urllib.parse
 import csv
-import re
 
 # Base URL of the website to scan
 base_url = "https://sl-ads.com"
@@ -16,12 +15,12 @@ if not os.path.exists('images'):
     os.makedirs('images')
 
 # Create the SQLite database connection
-conn = sqlite3.connect('lkadsdata2.sqlite')
+conn = sqlite3.connect('lkadsdata.sqlite')
 c = conn.cursor()
 
 # Create the 'ads' table in the database
 c.execute('''CREATE TABLE IF NOT EXISTS ads
-             (AdTitle TEXT, Description TEXT, IsVerified TEXT, IsBoosted TEXT, URL TEXT, ImagePath TEXT, MobileNumber TEXT, PageURL TEXT, Likes TEXT)''')
+             (AdTitle TEXT, Description TEXT, IsVerified TEXT, IsBoosted TEXT, URL TEXT, ImagePath TEXT, MobileNumber TEXT, PageURL TEXT)''')
 
 # Function to save the image in a folder
 def save_image(url, image_name):
@@ -39,17 +38,14 @@ def extract_data(url):
     ad_title = ad_title_element.text.strip() if ad_title_element else ''
 
     # Find the description with the specified CSS id
-    description_element = soup.find(id='descriptionTxt')
+    description_element = soup.find(id='desctiptionTxt')
     description_text = description_element.text.strip() if description_element else ''
 
     # Find the likes with the specified CSS id
     like_val_element = soup.find(id='like_val')
     like_val_text = like_val_element.text.strip() if like_val_element else '0'
     reg = re.search(r'\b\d+\b', like_val_text)
-    if reg:
-        like_val_text = int(reg.group())
-    else:
-        like_val_text = '0'
+    like_val_text = int(reg.group())
     
     # Find all image tags with the specified CSS classes and extract the source URLs
     image_tags = soup.find_all('img', {'class': ['img-fluid', 'singleadImage']})
@@ -90,7 +86,7 @@ def extract_data(url):
         save_image(source_url, image_name)
 
         # Get the path of the saved image
-        image_path = f"images/{image_name}"
+        image_path = f"https://sl-ads.info/wp-content/uploads/slads_crawler/images/{image_name}"
 
         # Find the mobile number element by id and extract the phone number
         mobile_number_element = soup.find('span', {'id': 'sellerPhoneNumberaa'})
