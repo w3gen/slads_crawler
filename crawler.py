@@ -41,6 +41,12 @@ def extract_data(url):
     description_element = soup.find(id='descriptionTxt')
     description_text = description_element.text.strip() if description_element else ''
 
+    # Find the likes with the specified CSS id
+    like_val_element = soup.find(id='like_val')
+    like_val_text = like_val_element.text.strip() if like_val_element else '0'
+    reg = re.search(r'\b\d+\b', like_val_text)
+    like_val_text = int(reg.group())
+    
     # Find all image tags with the specified CSS classes and extract the source URLs
     image_tags = soup.find_all('img', {'class': ['img-fluid', 'singleadImage']})
 
@@ -87,20 +93,20 @@ def extract_data(url):
         mobile_number = mobile_number_element.text.strip() if mobile_number_element else ''
 
         # Append the data to the list
-        data.append([ad_title, description_text, is_verified, is_boosted, source_url, image_path, mobile_number, url])
+        data.append([ad_title, description_text, is_verified, is_boosted, source_url, image_path, mobile_number, url, like_val_text])
 
         # Insert the data into the 'ads' table in the database
-        c.execute("INSERT INTO ads VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  (ad_title, description_text, is_verified, is_boosted, source_url, image_path, mobile_number, url))
+        c.execute("INSERT INTO ads VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                  (ad_title, description_text, is_verified, is_boosted, source_url, image_path, mobile_number, url, like_val_text))
 
     # Save the extracted data to a CSV file
-    df = pd.DataFrame(data, columns=['AdTitle', 'Description', 'IsVerified', 'IsBoosted', 'URL', 'ImagePath', 'MobileNumber', 'PageURL'])
+    df = pd.DataFrame(data, columns=['AdTitle', 'Description', 'IsVerified', 'IsBoosted', 'URL', 'ImagePath', 'MobileNumber', 'PageURL', 'Likes'])
     df.to_csv('data.csv', index=False, mode='a', header=not os.path.exists('data.csv'))
 
 # Main function to start scanning the website
 def scan_website():
     # Iterate through IDs from 0 to 1000000
-    for ad_id in range(249901, 1000001):
+    for ad_id in range(237540, 1000001):
         page_url = ad_url_template + str(ad_id)
         response = requests.get(page_url)
 
